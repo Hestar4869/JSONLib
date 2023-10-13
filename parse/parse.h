@@ -6,6 +6,10 @@
 #define JSONLIB_PARSE_H
 #include<common/common.h>
 
+
+
+bool init(FILE* origin);
+
 /**
  * object
  *      '{' ws '}'
@@ -25,7 +29,13 @@ char* parse_string();
  * @return 返回具体值以及类型
  */
 ValueNode* parse_value();
+/**
+ * 读取并解析数字类型，并检测是否构成完备值
+ * @return 返回一个数字
+ */
+double parse_number();
 
+ValueNode* parse_array();
 /**
  * 持续读入并处理连续空白字符，例如回车、换行。制表符等
  * @return 返回第一个非空白字符的字符

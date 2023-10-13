@@ -17,7 +17,7 @@ typedef enum ValueType{
 typedef union Value{
     char* str;
     double number;
-    struct ObjectNode* object;
+    struct ObjectList* object;
     struct ValueNode* array;
     bool tf;
     void* ptr;
@@ -56,7 +56,7 @@ typedef struct ArrayList{
     struct ValueNode* tail;
 } ArrayList;
 
-void add_object_node(ObjectNode* oList, ObjectNode* node);
+void add_object_node(ObjectList* oList, ObjectNode* node);
 void delete_object_node(ObjectNode* node);
 
 #endif //JSONLIB_COMMON_H
