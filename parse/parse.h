@@ -8,7 +8,7 @@
 
 
 
-bool init(FILE* origin);
+bool parse_init(FILE* origin);
 
 /**
  * object

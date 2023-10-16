@@ -10,7 +10,7 @@
 #include <stdlib.h>
 static FILE* stream;
 
-bool init(FILE* origin){
+bool parse_init(FILE* origin){
     stream = origin;
     return true;
 }
@@ -207,9 +207,10 @@ ValueNode* parse_value(){
         case t_object:
             val->value.object = parse_object();
             break;
-        case t_array:
+        case t_array: {
             val->value.array = parse_array();
             break;
+        }
         case t_bool:
         case t_null: {
             char *str = parse_constant();
@@ -223,11 +224,7 @@ ValueNode* parse_value(){
         }
 
     }
-    if(!val->value.ptr && val->type!=t_null ){
-        free_value_node(val);
-        free(val);
-        return NULL;
-    }
+
     return val;
 
 }
@@ -240,11 +237,14 @@ char* parse_constant(){
     else if( ch == 'f')
         fgets(constant,6,stream);
     if((ch == 'n' && !strcmp(constant,"null")) || (ch=='t'&& !strcmp(constant,"true")) || (ch=='f'&& !strcmp(constant,"false"))){
-        fprintf(stream,"%s:不存在常量%s\n",ERROR_PARSE_CONSTANT,constant);
+        return constant;
+    }
+    else{
+        fprintf(stderr,"%s:不存在常量%s\n",ERROR_PARSE_CONSTANT,constant);
         free(constant);
         return NULL;
     }
-    return constant;
+
 }
 ArrayList* parse_array(){
     char ch = getc(stream);
@@ -262,7 +262,8 @@ ArrayList* parse_array(){
         ValueNode *value = parse_value();
 
         //将值加入到数组中
-        add_value_node(aList,value);
+        if(value!=NULL)
+            add_value_node(aList,value);
 
         // 处理分隔符或反中括号
         deal_whitespace();

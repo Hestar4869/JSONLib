@@ -45,10 +45,11 @@ void free_objectList(ObjectList* oList){
     while(next){
         tmp = next;
         next = next->next;
+        free_object_node(tmp);
         free(tmp);
     }
-    if(oList!=NULL)
-        free(oList);
+
+    free(oList);
 }
 
 
