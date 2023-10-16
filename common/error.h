@@ -7,5 +7,7 @@
 
 #define ERROR_PARSE_STRING "字符串解析错误"
 #define ERROR_PARSE_OBJECT "对象解析错误"
-#define ERRPR_PARSE_NUMBER "数字解析错误"
+#define ERROR_PARSE_NUMBER "数字解析错误"
+#define ERROR_PARSE_CONSTANT "常量解析错误"
+#define ERROR_PARSE_ARRAY "数组解析错误"
 #endif //JSONLIB_ERROR_H

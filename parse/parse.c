@@ -194,6 +194,8 @@ ValueNode* parse_value(){
         val->type = t_bool;
     else if(ch == 'n')
         val->type = t_null;
+    else
+        return NULL;
 
     switch (val->type) {
         case t_string:
@@ -209,11 +211,40 @@ ValueNode* parse_value(){
             val->value.array = parse_array();
             break;
         case t_bool:
-        case t_null:
-            val->value.ptr = NULL;
+        case t_null: {
+            char *str = parse_constant();
+            if (!str) break;
+            if(str[0] == 'f')
+                val->value.tf = false;
+            else if(str[0] == 't')
+                val->value.tf = true;
+            else if(str[0] == 'n')
+                val->value.ptr = NULL;
+        }
+
+    }
+    if(!val->value.ptr && val->type!=t_null ){
+        free_value_node(val);
+        free(val);
+        return NULL;
     }
     return val;
 
+}
+char* parse_constant(){
+    char* constant = calloc(7, sizeof(char));
+    char ch = peek_char();
+    if(ch == 'n' || ch == 't'){
+        fgets(constant,5,stream);
+    }
+    else if( ch == 'f')
+        fgets(constant,6,stream);
+    if((ch == 'n' && !strcmp(constant,"null")) || (ch=='t'&& !strcmp(constant,"true")) || (ch=='f'&& !strcmp(constant,"false"))){
+        fprintf(stream,"%s:不存在常量%s\n",ERROR_PARSE_CONSTANT,constant);
+        free(constant);
+        return NULL;
+    }
+    return constant;
 }
 ArrayList* parse_array(){
     char ch = getc(stream);
@@ -241,7 +272,11 @@ ArrayList* parse_array(){
         else if(ch == ']')
             break;
         else{
-            // deal error
+
+            fprintf(stream,"%s:未检测到分隔符或反中括号，仅检测到'%c'",ERROR_PARSE_ARRAY,ch);
+            free_arrayList(aList);
+            free(aList);
+            return NULL;
         }
     }
     return aList;

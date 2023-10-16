@@ -29,13 +29,25 @@ char* parse_string();
  * @return 返回具体值以及类型
  */
 ValueNode* parse_value();
+
 /**
  * 读取并解析数字类型，并检测是否构成完备值
  * @return 返回一个数字
  */
 double parse_number();
 
+/**
+ * 读取并解析数组，并检测是否构成完备值
+ * @return  返回一个值集合
+ */
 ArrayList* parse_array();
+
+/**
+ * 读取并解析3个常量值true,false,null,并检测是否符合
+ * @return 返回常量值的字符串集
+ */
+char* parse_constant();
+
 /**
  * 持续读入并处理连续空白字符，例如回车、换行。制表符等
  * @return 返回第一个非空白字符的字符
