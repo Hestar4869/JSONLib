@@ -8,7 +8,7 @@
 //
 int main(){
     char test[][BUFFER_SIZE]={"{\"test_number\":34e3,\"test_string\":\"kdjslid\\\\\"}","{\"test_array\":[38749e-4,\"fas\"],\"test_object\":{\"ssa\":324}}"};
-    init(stdin);
+    parse_init(stdin);
     ObjectList* json = parse_object();
     ObjectNode* next = json->head,*tmp;
     while(next){
@@ -16,6 +16,4 @@ int main(){
     }
 
     free_objectList(json);
-
-
 }

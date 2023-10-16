@@ -13,7 +13,7 @@ int main(){
         fclose(file);
         file = fopen("test_parse_arraytext.txt","r");
         printf("当前检测test%d: %s\n",i,test[i]);
-        init(file);
+        parse_init(file);
         ArrayList* aList = parse_array();
         ValueNode* next = aList->head;
         while(next){

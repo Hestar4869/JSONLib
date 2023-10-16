@@ -16,7 +16,7 @@ int main(){
         file = fopen("test_parse_stringtext.txt","r");
         printf("当前检测test%d: %s\n",i,test[i]);
         char *str;
-        init(file);
+        parse_init(file);
         str = parse_string();
         if(str == NULL)
             exit(-1);

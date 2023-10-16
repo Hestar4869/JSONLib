@@ -20,3 +20,9 @@ target_link_libraries(test_parse_array parse)
 
 add_executable(test_parse_object test/test_parse_object.c)
 target_link_libraries(test_parse_object parse)
+
+
+add_library(serialize SHARED serialize/serialize.c serialize/serialize.h
+        common/common.c)
+add_executable(test_serialize test/test_serialize.c)
+target_link_libraries(test_serialize serialize parse)
