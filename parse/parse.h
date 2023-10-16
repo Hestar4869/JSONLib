@@ -35,7 +35,7 @@ ValueNode* parse_value();
  */
 double parse_number();
 
-ValueNode* parse_array();
+ArrayList* parse_array();
 /**
  * 持续读入并处理连续空白字符，例如回车、换行。制表符等
  * @return 返回第一个非空白字符的字符

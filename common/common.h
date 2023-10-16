@@ -18,7 +18,7 @@ typedef union Value{
     char* str;
     double number;
     struct ObjectList* object;
-    struct ValueNode* array;
+    struct ArrayList* array;
     bool tf;
     void* ptr;
 } Value;
@@ -29,6 +29,9 @@ typedef union Value{
 typedef struct ValueNode{
     ValueType type;
     Value value;
+    // 当type==t_array时，next指向下一个值节点，其他时候不使用该属性
+    struct ValueNode* next;
+    struct ValueNode* prev;
 }ValueNode;
 
 /**
@@ -36,8 +39,9 @@ typedef struct ValueNode{
  */
 typedef struct ObjectNode{
     char* name;
-    struct ValueNode value;
+    struct ValueNode* value;
     struct ObjectNode* next;
+    struct ObjectNode* prev;
 } ObjectNode;
 
 /**
@@ -57,6 +61,11 @@ typedef struct ArrayList{
 } ArrayList;
 
 void add_object_node(ObjectList* oList, ObjectNode* node);
-void delete_object_node(ObjectNode* node);
+void delete_object_node(ObjectList* oList,ObjectNode* node);
+void free_objectList(ObjectList* oList);
+void free_object_node(ObjectNode* node);
 
+void add_value_node(ArrayList* aList,ValueNode* node);
+void free_arrayList(ArrayList * aList);
+void free_value_node(ValueNode* node);
 #endif //JSONLIB_COMMON_H

@@ -4,10 +4,10 @@
 
 #include <stdio.h>
 #include<ctype.h>
-#include <malloc.h>
 #include "parse.h"
 #include <common/error.h>
 #include <string.h>
+#include <stdlib.h>
 static FILE* stream;
 
 bool init(FILE* origin){
@@ -16,7 +16,10 @@ bool init(FILE* origin){
 }
 
 ObjectList* parse_object(){
-    ObjectList* oList;
+    if(getc(stream) != '{')
+        return NULL;
+
+    ObjectList* oList = calloc(1,sizeof(ObjectList));
     while(1)
     {
         // 处理空白字符
@@ -27,15 +30,16 @@ ObjectList* parse_object(){
         name = parse_string();
         if (name == NULL) {
             fprintf(stderr, "%s:name部分字符串解析错误\n", ERROR_PARSE_OBJECT);
+            free_objectList(oList);
             return NULL;
         }
 
         // 处理冒号
         ch = deal_whitespace();
-        ch = getchar();
+        ch = getc(stream);
         if (ch != ':') {
             fprintf(stderr, "%s:检测到字符%c,缺乏冒号:\n", ERROR_PARSE_OBJECT, ch);
-            free(name);
+            free_objectList(oList);
             return NULL;
         }
 
@@ -44,11 +48,29 @@ ObjectList* parse_object(){
         ValueNode *value;
         value = parse_value();
 
-        ObjectNode* oNode= malloc(sizeof (ObjectNode));
-        oNode->value=value
-    }
+        ObjectNode* oNode= calloc(1,sizeof (ObjectNode));
+        oNode->name = name;
+        oNode->value=value;
 
-    //
+        //将该对象节点加入到对象集合中
+        add_object_node(oList,oNode);
+
+        // 处理分隔符或反大括号
+        deal_whitespace();
+        ch = getc(stream);
+        if(ch == ',')
+            continue;
+        else if(ch == '}')
+            break;
+        else{
+            fprintf(stderr,"%s:上一个对象解析完成后，未检测到','或'}'，而是'%c'",ERROR_PARSE_OBJECT,ch);
+            // todo print error object
+
+            free_objectList(oList);
+            return NULL;
+        }
+    }
+    return oList;
 }
 
 char* parse_string(){
@@ -59,8 +81,8 @@ char* parse_string(){
         return NULL;
     }
 
-    char* str = malloc(BUFFER_SIZE*sizeof(char));
-    memset(str,'\0',BUFFER_SIZE);
+    char* str = calloc(BUFFER_SIZE,sizeof(char));
+
     int index=0;
 
     while( (ch = getc(stream)) && index<BUFFER_SIZE){
@@ -112,8 +134,7 @@ double parse_number() {
     // 一个number类型，应该包括三个部分 integer fraction exponent
 
     // 解析integer部分
-    char* str = malloc(BUFFER_SIZE);
-    memset(str,'\0',BUFFER_SIZE);
+    char* str = calloc(BUFFER_SIZE, sizeof(char));
     int index = 0;
     char ch = peek_char();
     if(ch == '-') {
@@ -123,17 +144,17 @@ double parse_number() {
     // 读入整数部分数字
     while(isdigit( ch = peek_char())){
         str[index++] = ch;
-        getc(stream);
+        ch = getc(stream);
     }
 
     // 解析fraction部分
     if(ch == '.') {
         str[index++] = ch;
-        getc(stream);
+        ch = getc(stream);
         //接着处理数字部分
         while(isdigit( ch = peek_char())){
             str[index++] = ch;
-            getc(stream);
+            ch = getc(stream);
         }
     }
 
@@ -144,17 +165,12 @@ double parse_number() {
         ch = peek_char();
         if(ch == '-' || ch == '+') {
             str[index++] = ch;
-            getc(stream);
-        }
-        else{
-            fprintf(stderr,"%s:解析exponent部分出错,未检测到e后面的加减号\n",ERRPR_PARSE_NUMBER);
-            // todo 设置errno提醒出现异常
-            return 0;
+            ch = getc(stream);
         }
         //接着处理数字部分
         while(isdigit( ch = peek_char())){
             str[index++] = ch;
-            getc(stream);
+            ch = getc(stream);
         }
     }
 
@@ -165,7 +181,7 @@ double parse_number() {
 
 ValueNode* parse_value(){
     char ch = peek_char();
-    ValueNode* val = malloc(sizeof(ValueNode));
+    ValueNode* val = calloc(1,sizeof(ValueNode));
     if(ch == '\"')
         val->type = t_string;
     else if(ch == '-' || isdigit(ch))
@@ -199,13 +215,41 @@ ValueNode* parse_value(){
     return val;
 
 }
-ValueNode* parse_array(){
-    // todo
+ArrayList* parse_array(){
+    char ch = getc(stream);
+    if(ch !='[')
+        return NULL;
+
+    ArrayList* aList = calloc(1,sizeof(ArrayList));
+    memset(aList,0, sizeof(ArrayList));
+
+    while(1){
+        // 处理空白字符
+        ch = deal_whitespace();
+
+        //处理数组的值
+        ValueNode *value = parse_value();
+
+        //将值加入到数组中
+        add_value_node(aList,value);
+
+        // 处理分隔符或反中括号
+        deal_whitespace();
+        ch = getc(stream);
+        if(ch == ',')
+            continue;
+        else if(ch == ']')
+            break;
+        else{
+            // deal error
+        }
+    }
+    return aList;
 }
 char deal_whitespace(){
     char ch;
     while(isspace(ch=peek_char())){
-        ch = getc(stream);
+        getc(stream);
     }
     return ch;
 }
@@ -213,7 +257,7 @@ char deal_whitespace(){
 char peek_char(){
     char ch = getc(stream);
     // 将取出的字符放回输入缓冲区
-    ungetc(ch,stdin);
+    ungetc(ch,stream);
     return ch;
 }
 
