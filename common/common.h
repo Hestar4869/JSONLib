@@ -60,12 +60,25 @@ typedef struct ArrayList{
     struct ValueNode* tail;
 } ArrayList;
 
+// 基本数据结构的增删查改
+ObjectNode* create_object_node(char* name,ValueNode* value);
+ObjectList* create_object_list();
 void add_object_node(ObjectList* oList, ObjectNode* node);
 void delete_object_node(ObjectList* oList,ObjectNode* node);
 void free_objectList(ObjectList* oList);
 void free_object_node(ObjectNode* node);
+ValueNode* find_value_by_name(ObjectList* aList,char* name);
 
+ValueNode* create_value_node(ValueType type,Value value);
+ValueNode* create_number(double num);
+ValueNode* create_string(char* str);
+ValueNode* create_bool(bool tf);
+ValueNode* create_null();
+ValueNode* create_array(ArrayList* aList);
+ArrayList* create_array_list();
 void add_value_node(ArrayList* aList,ValueNode* node);
+void delete_value_node(ArrayList* aList,ValueNode* node);
 void free_arrayList(ArrayList * aList);
 void free_value_node(ValueNode* node);
+
 #endif //JSONLIB_COMMON_H
