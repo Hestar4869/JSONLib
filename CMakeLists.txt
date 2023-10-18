@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 project(JSONLib C)
 
 set(CMAKE_C_STANDARD 11)
@@ -23,3 +23,8 @@ target_link_libraries(test_serialize serialize parse)
 
 add_executable(test_CRUD test/test_CRUD.c)
 target_link_libraries(test_CRUD serialize parse)
+
+add_executable(example example.c)
+target_link_libraries(example serialize parse)
+
+add_definitions("-Wall -g")
