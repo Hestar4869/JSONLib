@@ -10,6 +10,7 @@
 #include <stdlib.h>
 static FILE* stream;
 
+static bool isescape(char ch);
 bool parse_init(FILE* origin){
     stream = origin;
     return true;
@@ -297,7 +298,7 @@ char peek_char(){
     return ch;
 }
 
-bool isescape(char ch){
+static bool isescape(char ch){
     const char escape[]={'\"','\\','/','b',
                          'f','n','r','t'};
 

@@ -7,7 +7,7 @@
 #include "serialize.h"
 
 static FILE* stream;
-bool isescape(char ch);
+static bool isescape(char ch);
 void serialize_init(FILE* origin){
     stream = origin;
 }
@@ -47,7 +47,7 @@ void serialize_object(ObjectList* oList){
 
 }
 void serialize_number(double num){
-    fprintf(stream,"%f",num);
+    fprintf(stream,"%g",num);
 }
 void serialize_constant(ValueNode* node){
     if(node->type == t_bool && node->value.tf == true)
@@ -123,7 +123,7 @@ void serialize_string(char* str){
     putc('\"',stream);
 }
 
-bool isescape(char ch){
+static bool isescape(char ch){
     const char escape[] = {   '\"', '\\', '/', '\b',
                             '\f', '\n', '\r','\t'};
     for(int i=0;i<8;i++){

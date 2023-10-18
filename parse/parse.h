@@ -5,7 +5,7 @@
 #ifndef JSONLIB_PARSE_H
 #define JSONLIB_PARSE_H
 #include<common/common.h>
-
+#include <stdio.h>
 
 
 bool parse_init(FILE* origin);
@@ -60,5 +60,5 @@ char deal_whitespace();
  */
 char peek_char();
 
-bool isescape(char ch);
+
 #endif //JSONLIB_PARSE_H

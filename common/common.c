@@ -8,8 +8,9 @@
 
 ObjectNode* create_object_node(char* name,ValueNode* value){
     char* _name = calloc(strlen(name)+1, sizeof(char));
+    strcpy(_name,name);
     ObjectNode* onode = calloc(1, sizeof(ObjectNode));
-    onode->name = name;
+    onode->name = _name;
     onode->value = value;
     return onode;
 }
@@ -93,6 +94,9 @@ void free_value_node(ValueNode* node){
         case t_array:
             free_arrayList(node->value.array);
             break;
+        default:
+            // 对于t_number , t_null , t_bool不做任何处理
+            break;
     }
 }
 
@@ -111,7 +115,7 @@ ArrayList* create_array_list(){
 }
 
 ValueNode* create_value_node(ValueType type,Value value){
-    ValueNode* vnode;
+    ValueNode *vnode = NULL;
     switch (type) {
         case t_bool:
             vnode = create_bool(value.tf);
@@ -120,10 +124,12 @@ ValueNode* create_value_node(ValueType type,Value value){
             vnode = create_null();
             break;
         case t_object:
+            vnode = calloc(1, sizeof(ValueNode));
             vnode->type = t_object;
             vnode->value = value;
             break;
         case t_array:
+            vnode = calloc(1, sizeof(ValueNode));
             vnode->type = t_array;
             vnode->value = value;
             break;
