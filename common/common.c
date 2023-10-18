@@ -49,11 +49,13 @@ void delete_object_node(ObjectList* oList,ObjectNode* node){
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
+    free_object_node(node);
 }
 
 void free_object_node(ObjectNode* node){
     free(node->name);
     free_value_node(node->value);
+    free(node);
 }
 
 void free_objectList(ObjectList* oList){
@@ -62,7 +64,6 @@ void free_objectList(ObjectList* oList){
         tmp = next;
         next = next->next;
         free_object_node(tmp);
-        free(tmp);
     }
 
     free(oList);
@@ -98,6 +99,7 @@ void free_value_node(ValueNode* node){
             // 对于t_number , t_null , t_bool不做任何处理
             break;
     }
+    free(node);
 }
 
 void free_arrayList(ArrayList * aList){
@@ -107,6 +109,7 @@ void free_arrayList(ArrayList * aList){
         next = next->next;
         free_value_node(tmp);
     }
+    free(aList);
 }
 
 ArrayList* create_array_list(){
@@ -153,7 +156,8 @@ ValueNode* create_number(double num){
 ValueNode* create_string(char* str){
     ValueNode* vnode = calloc(1, sizeof(ValueNode));
     vnode->type = t_string;
-    vnode->value.str = str;
+    vnode->value.str = calloc(strlen(str)+1,sizeof(char ));
+    strcpy(vnode->value.str,str);
     return vnode;
 }
 
@@ -194,6 +198,7 @@ void delete_value_node(ArrayList* aList,ValueNode* node){
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
+    free_value_node(node);
 }
 
 ValueNode* find_value_by_name(ObjectList* aList,char* name){

@@ -176,7 +176,7 @@ double parse_number() {
     }
 
     double ret = strtod(str,NULL);
-
+    free(str);
     return ret;
 }
 
@@ -222,6 +222,8 @@ ValueNode* parse_value(){
                 val->value.tf = true;
             else if(str[0] == 'n')
                 val->value.ptr = NULL;
+            // 释放掉parse_constant()函数内申请的内存空间
+            free(str);
         }
 
     }
